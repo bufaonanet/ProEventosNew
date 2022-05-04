@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ProEventos.Application;
-using ProEventos.Domain;
-using ProEventos.Persistence.Contextos;
+using ProEventos.Application.DTOs;
 
 namespace ProEventos.API.Controllers
 {
@@ -14,7 +11,7 @@ namespace ProEventos.API.Controllers
     [Route("api/[controller]")]
     public class EventosController : ControllerBase
     {
-        public IEventosService _service { get; set; }
+        private readonly IEventosService _service; 
 
         public EventosController(IEventosService service)
         {
@@ -29,7 +26,7 @@ namespace ProEventos.API.Controllers
             try
             {
                 var eventos = await _service.GetAllEventosAsync();
-                if (eventos == null) return NotFound("Nenhum evento encontrado.");
+                if (eventos == null) return NoContent(); 
 
                 return Ok(eventos);
             }
@@ -46,7 +43,7 @@ namespace ProEventos.API.Controllers
             try
             {
                 var eventos = await _service.GetEventoByIdAsync(id, true);
-                if (eventos == null) return NotFound("Nenhum evento encontrado.");
+                if (eventos == null) return NoContent();
 
                 return Ok(eventos);
             }
@@ -63,7 +60,7 @@ namespace ProEventos.API.Controllers
             try
             {
                 var eventos = await _service.GetAllEventosByTemaAsync(tema, true);
-                if (eventos == null) return NotFound("Nenhum evento encontrado.");
+                if (eventos == null) return NoContent();
 
                 return Ok(eventos);
             }
@@ -75,7 +72,7 @@ namespace ProEventos.API.Controllers
         }
 
         [HttpPost()]
-        public async Task<IActionResult> Post(Evento model)
+        public async Task<IActionResult> Post(EventoDto model)
         {
             try
             {
@@ -92,7 +89,7 @@ namespace ProEventos.API.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Put(int id, Evento model)
+        public async Task<IActionResult> Put(int id, EventoDto model)
         {
             try
             {
