@@ -1,9 +1,13 @@
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using ProEventos.Domain;
+using ProEventos.Domain.Identity;
 
 namespace ProEventos.Persistence.Contextos
 {
-    public class ProEventosContext : DbContext
+    public class ProEventosContext : IdentityDbContext<User, Role, int, IdentityUserClaim<int>, UserRole,
+            IdentityUserLogin<int>, IdentityRoleClaim<int>, IdentityUserToken<int>>
     {
         public ProEventosContext(DbContextOptions<ProEventosContext> options) : base(options) { }
 
@@ -15,6 +19,24 @@ namespace ProEventos.Persistence.Contextos
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<UserRole>(userRole =>
+            {
+                userRole.HasKey(ur => new { ur.RoleId, ur.UserId });
+
+                userRole.HasOne(ur => ur.Role)
+                    .WithMany(r => r.UserRoles)
+                    .HasForeignKey(ur => ur.RoleId)
+                    .IsRequired();
+
+                userRole.HasOne(ur => ur.User)
+                    .WithMany(r => r.UserRoles)
+                    .HasForeignKey(ur => ur.UserId)
+                    .IsRequired();
+            });
+
+
             modelBuilder.
                 Entity<PalestranteEvento>()
                 .HasKey(pe => new { pe.EventoId, pe.PalestranteId });
@@ -27,7 +49,7 @@ namespace ProEventos.Persistence.Contextos
             modelBuilder.Entity<Palestrante>()
                 .HasMany(p => p.RedesSociais)
                 .WithOne(rs => rs.Palestrante)
-                .OnDelete(DeleteBehavior.Cascade);    
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }
