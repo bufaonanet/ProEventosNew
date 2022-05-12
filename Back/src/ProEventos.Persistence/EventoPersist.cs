@@ -8,14 +8,10 @@ using ProEventos.Persistence.Models;
 
 namespace ProEventos.Persistence
 {
-    public class EventoPersist : IEventoPersist
+    public class EventoPersist : GeralPersist, IEventoPersist
     {
-        private readonly ProEventosContext _context;
 
-        public EventoPersist(ProEventosContext context)
-        {
-            _context = context;
-        }                
+        public EventoPersist(ProEventosContext context) : base(context) { }
 
         public async Task<Evento> GetEventoByIdAsync(int userId, int PalestranteId, bool includePalestrantes = false)
         {
@@ -52,11 +48,11 @@ namespace ProEventos.Persistence
 
             query = query
                 .Where(e => (e.Tema.ToLower().Contains(pageParams.Term.ToLower()) ||
-                             e.Local.ToLower().Contains(pageParams.Term.ToLower())) && 
+                             e.Local.ToLower().Contains(pageParams.Term.ToLower())) &&
                              e.UserId == userId)
                 .OrderBy(e => e.Id);
 
-            return await PageList<Evento>.CreateAsync(query,pageParams.PageNumber,pageParams.pageSize);
+            return await PageList<Evento>.CreateAsync(query, pageParams.PageNumber, pageParams.pageSize);
         }
     }
 }

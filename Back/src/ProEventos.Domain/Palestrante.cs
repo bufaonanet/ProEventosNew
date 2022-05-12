@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace ProEventos.Domain
 {
-    public class Palestrante
+    public class Palestrante 
     {
         public int Id { get; set; }       
         public string MiniCurriculo { get; set; }       
