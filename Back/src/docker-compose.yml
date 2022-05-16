@@ -1,0 +1,42 @@
+version: '3.8'
+
+volumes:
+  ProEventosDB:
+
+networks:
+  mysqlNet:
+  proeventosNet:
+
+services:
+
+  proeventos_db:
+    image: "mysql:5.7"
+    container_name: proeventos_db
+    ports:
+      - "3306:3306"
+    volumes:
+      - ProEventosDB:/var/lib/mysql
+    networks:
+      - mysqlNet
+    environment:           
+      - MYSQL_USER=root 
+      - MYSQL_PASSWORD=admin123 
+      - MYSQL_ROOT_PASSWORD=admin123 
+      - MYSQL_ROOT_HOST=%
+      - bind-address:0.0.0.0 
+
+  proeventos_app:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    container_name: proeventos_app
+    networks:
+      - proeventosNet
+      - mysqlNet
+    ports:
+      - 5000:80
+    environment:
+      - DBHOST=proeventos_db
+    depends_on:
+      - proeventos_db
+    

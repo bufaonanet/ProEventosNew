@@ -34,9 +34,15 @@ namespace ProEventos.API
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<ProEventosContext>(
-                context => context.UseSqlite(Configuration.GetConnectionString("Default"))
-            );
+            //services.AddDbContext<ProEventosContext>(
+            //    context => context.UseSqlite(Configuration.GetConnectionString("Default"))
+            //);
+
+            services.AddDbContext<ProEventosContext>(context =>
+            {
+                var connetionString = Configuration.GetConnectionString("MySqlConnection");
+                context.UseMySql(connetionString, ServerVersion.AutoDetect(connetionString));
+            });
 
             services.AddIdentityCore<User>(options =>
             {
@@ -46,7 +52,7 @@ namespace ProEventos.API
                 options.Password.RequireLowercase = false;
                 options.Password.RequiredLength = 4;
             })
-            .AddRoles<Role>() 
+            .AddRoles<Role>()
             .AddRoleManager<RoleManager<Role>>()
             .AddSignInManager<SignInManager<User>>()
             .AddRoleValidator<RoleValidator<Role>>()
@@ -82,7 +88,7 @@ namespace ProEventos.API
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<IPalestranteService, PalestranteService>();
-            services.AddScoped<IRedeSocialService, RedeSocialService>();           
+            services.AddScoped<IRedeSocialService, RedeSocialService>();
 
             services.AddScoped<IGeralPersist, GeralPersist>();
             services.AddScoped<IEventoPersist, EventoPersist>();
@@ -95,11 +101,11 @@ namespace ProEventos.API
             services.AddSwaggerGen(options =>
             {
                 options.SwaggerDoc("v1", new OpenApiInfo { Title = "ProEventos.API", Version = "v1" });
-                
+
                 options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
                     Description = @"JWT Authorization header usando Bearer.
-                                Entre com 'Bearer ' [espaço] então coloque seu token.
+                                Entre com 'Bearer ' [espaï¿½o] entï¿½o coloque seu token.
                                 Exemplo: 'Bearer 12345abcdef'",
                     Name = "Authorization",
                     In = ParameterLocation.Header,
@@ -133,9 +139,10 @@ namespace ProEventos.API
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "ProEventos.API v1"));
             }
+
+            app.UseSwagger();
+            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "ProEventos.API v1"));
 
             app.UseHttpsRedirection();
 
