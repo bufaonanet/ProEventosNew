@@ -25,11 +25,11 @@ services:
             - MYSQL_ROOT_HOST=%
             - bind-address=0.0.0.0 
     
-    proeventos_app:
+    api:
         build:
             context: .
-            dockerfile: Dockerfile
-        container_name: proeventos_app
+            dockerfile: Dockerfile.V2
+        container_name: api
         networks: 
             - mysqlNET
             - proeventosNET

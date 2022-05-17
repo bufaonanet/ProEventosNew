@@ -1,0 +1,11 @@
+# https://hub.docker.com/_/microsoft-dotnet
+FROM mcr.microsoft.com/dotnet/aspnet:5.0 
+LABEL version="1.0" descrition="Api .net 5"
+
+COPY dist /app
+
+WORKDIR /app
+
+EXPOSE 80/tcp
+
+ENTRYPOINT ["dotnet", "ProEventos.API.dll"]
