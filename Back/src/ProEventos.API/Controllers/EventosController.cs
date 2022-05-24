@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using ProEventos.API.Extensions;
 using ProEventos.Application;
 using ProEventos.Application.DTOs;
@@ -18,15 +19,18 @@ namespace ProEventos.API.Controllers
     [Route("api/[controller]")]
     public class EventosController : ControllerBase
     {
+        private readonly ILogger<EventosController> _logger;
         private readonly IEventoService _service;
         private readonly IWebHostEnvironment _hostEnvironment;
         private readonly IAccountService _accountService;
 
         public EventosController(
+            ILogger<EventosController> logger,
             IEventoService service,
             IWebHostEnvironment hostEnvironment,
             IAccountService accountService)
         {
+            _logger = logger;
             _service = service;
             _hostEnvironment = hostEnvironment;
             _accountService = accountService;
@@ -38,6 +42,12 @@ namespace ProEventos.API.Controllers
         {
             try
             {
+                var userId = User.GetUserId();
+                var userName = User.GetUserName();
+
+                _logger.LogInformation("{userId} - {userName} consultando eventos! ", userId, userName);
+
+
                 var eventos = await _service.GetAllEventosAsync(User.GetUserId(), pageParams);
                 if (eventos == null) return NoContent();
 

@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.Extensions.Logging;
 using ProEventos.Application.DTOs;
 using ProEventos.Domain;
 using ProEventos.Persistence.Contratos;
@@ -9,16 +10,19 @@ using ProEventos.Persistence.Models;
 namespace ProEventos.Application
 {
     public class EventoService : IEventoService
-    {      
+    {
+        private readonly ILogger<EventoService> _logger;
         private readonly IEventoPersist _eventoPersist;
         private readonly IMapper _mapper;
 
-        public EventoService(           
-            IEventoPersist eventoPersist, 
-            IMapper mapper)
-        {            
+        public EventoService(
+            IEventoPersist eventoPersist,
+            IMapper mapper, 
+            ILogger<EventoService> logger)
+        {
             _eventoPersist = eventoPersist;
             _mapper = mapper;
+            _logger = logger;
         }
         public async Task<EventoDto> AddEvento(int userId, EventoDto model)
         {
@@ -107,6 +111,8 @@ namespace ProEventos.Application
         {
             try
             {
+                _logger.LogInformation("Retornando todos eventos");
+
                 var eventos = await _eventoPersist.GetAllEventosAsync(userId, pageParams, includePalestrantes);
                 if (eventos == null) return null;
 

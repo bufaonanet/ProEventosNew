@@ -34,15 +34,15 @@ namespace ProEventos.API
 
         public void ConfigureServices(IServiceCollection services)
         {
-            //services.AddDbContext<ProEventosContext>(
-            //    context => context.UseSqlite(Configuration.GetConnectionString("Default"))
-            //);
+            services.AddDbContext<ProEventosContext>(
+                context => context.UseSqlite(Configuration.GetConnectionString("Default"))
+            );
 
-            services.AddDbContext<ProEventosContext>(context =>
-            {
-                var connetionString = Configuration.GetConnectionString("MySqlConnection");
-                context.UseMySql(connetionString, ServerVersion.AutoDetect(connetionString));
-            });
+            //services.AddDbContext<ProEventosContext>(context =>
+            //{
+            //    var connetionString = Configuration.GetConnectionString("MySqlConnection");
+            //    context.UseMySql(connetionString, ServerVersion.AutoDetect(connetionString));
+            //});
 
             services.AddIdentityCore<User>(options =>
             {

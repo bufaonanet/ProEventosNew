@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using ProEventos.API.Extensions;
 using ProEventos.Application;
 using ProEventos.Application.DTOs;
@@ -13,15 +14,18 @@ namespace ProEventos.API.Controllers
     [ApiController]
     public class AccountController : ControllerBase
     {
+        private readonly ILogger<AccountController> _logger;
         private readonly IAccountService _accountService;
         private readonly ITokenService _tokenService;
 
         public AccountController(
+            ILogger<AccountController> logger,
             IAccountService accountService,
             ITokenService tokenService)
         {
             _accountService = accountService;
             _tokenService = tokenService;
+            _logger = logger;
         }
 
         [HttpGet("get-user")]
@@ -65,11 +69,13 @@ namespace ProEventos.API.Controllers
         {
             try
             {
+                _logger.LogInformation("Logando na aplicação");
+
                 var user = await _accountService.GetUserByUserNameAsync(userLogin.Username);
                 if (user == null) return Unauthorized("Usuário ou Senha estão errados.");
 
                 var result = await _accountService.CheckUserPasswordAsync(user, userLogin.Password);
-                if (result.Succeeded) Unauthorized("Usuário ou Senha estão errados.");
+                if (result.Succeeded) Unauthorized("Usuário ou Senha estão errados.");               
 
                 return Ok(new
                 {
